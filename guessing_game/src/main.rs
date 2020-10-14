@@ -1,5 +1,9 @@
 extern crate std; // always done implicitly
+extern crate rand;
+
 use std::io;
+use std::cmp::Ordering;
+use rand::Rng;
 
 //fn main()
 // is equal
@@ -8,6 +12,11 @@ use std::io;
 //explicitly
 fn main() {
     println!("Guess the number. You can input you number now:");
+
+    let secret_number = rand::thread_rng().gen_range(1, 101);
+    // method gen_range is inclusive on the lower bound
+    // but exclusive on the upper bound 
+    // so [0, 101)
 
     let ref mut guess = String::new();
     // v1: let mut guess = String::new();
@@ -57,5 +66,16 @@ fn main() {
     // we can use .ok().expect() just want to crash on error
     // and currently for us this is okay
 
-    println!("You have guessed the number: {}!!! Hooray !!!", guess);
+    // some variable shadowing here :)
+    let guess : u32 = guess.to_string().trim().parse()
+        .ok()
+        .expect("Please type a number and not some crap");
+
+    println!("Your number is: {}", guess);
+
+    match guess.cmp(&secret_number) {
+        Ordering::Less      => println!("Your number is to small"),
+        Ordering::Greater   => println!("Your number is to big"),
+        Ordering::Equal     => println!("You win!!! Hooray!!!"),
+    }
 }

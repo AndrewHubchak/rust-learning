@@ -6,4 +6,8 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# I can use '*' to upload latest version always
+# or to specify smth like '0.7.*'
 [dependencies]
+
+rand = "0.7.3"
