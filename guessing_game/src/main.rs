@@ -46,8 +46,8 @@ fn main() {
         // aka `static method`
 
         io::stdin().read_line(guess)
-            .ok()
-            .expect("Read has failed");
+         .ok()
+         .expect("Read has failed");
         
         // io.stdin() or std::io::stdin()
         // This particular `associated function` returns a handle to the standard input for your
@@ -68,9 +68,10 @@ fn main() {
         // and currently for us this is okay
 
         // some variable shadowing here :)
-        let guess : u32 = guess.to_string().trim().parse()
-            .ok()
-            .expect("Please type a number and not some crap");
+        let guess : u32 = match guess.to_string().trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
 
         println!("Your number is: {}", guess);
 
