@@ -1,19 +1,32 @@
 use std::time;
 use std::thread;
+use std::sync::{Mutex, Arc};
+
+struct Table {
+    forks: Vec<Mutex<()>>,
+}
 
 struct Trainee {
     name: String,
+    left: usize,
+    right: usize,
 }
 
 impl Trainee {
-    fn new(name: &str) -> Trainee {
+    fn new(name: &str, left: usize, right: usize) -> Trainee {
         Trainee {
             name: name.to_string(),
             //to_string will create a copy of the string where &str points to and give a this new string
+            left: left,
+            right: right,
         }
     }
 
-    fn eat(&self) {
+    fn eat(&self, table: &Table) {
+        // underscore tells Rust compiler that we are not going to use this value, so not warning is needed
+        let _left = table.forks[self.left].lock().unwrap();
+        let _right = table.forks[self.right].lock().unwrap();
+
         println!("{} is eating.", self.name);
         
         thread::sleep(time::Duration::new(1, 0));
@@ -23,17 +36,27 @@ impl Trainee {
 }
 
 fn main() {
+    let table = Arc::new(Table { forks: vec![
+        Mutex::new(()),
+        Mutex::new(()),
+        Mutex::new(()),
+        Mutex::new(()),
+        Mutex::new(()),
+    ]});
+
     let trainees = vec![
-        Trainee::new("Bohdan Porokhnavets"),
-        Trainee::new("Artem Dmytriv"),
-        Trainee::new("Liubomyr Kotias"),
-        Trainee::new("Kateryna Dubska"),
-        Trainee::new("Petro Bratash"),
+        Trainee::new("Bohdan Porokhnavets", 0, 1),
+        Trainee::new("Artem Dmytriv", 1, 2),
+        Trainee::new("Liubomyr Kotias", 2, 3),
+        Trainee::new("Kateryna Dubska", 3, 4),
+        Trainee::new("Petro Bratash", 0, 4),
     ];
 
     let handles: Vec<_> = trainees.into_iter().map(|p| {
+        let table = table.clone();
+
         thread::spawn(move || {
-            p.eat();
+            p.eat(&table);
         })
     }).collect();
 
