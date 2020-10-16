@@ -1,3 +1,5 @@
+use std::thread;
+
 struct Trainee {
     name: String,
 }
@@ -11,6 +13,10 @@ impl Trainee {
     }
 
     fn eat(&self) {
+        println!("{} is eating.", self.name);
+        
+        thread::sleep_ms(1000);
+
         println!("{} is done eating.", self.name);
     }
 }
